@@ -1,0 +1,222 @@
+/* ============================================================
+   实习雷达 · UI 设计令牌（Design Tokens）
+   版本：1.0 · 冻结日期 2026-10-26
+   唯一真源：所有界面（含 Element Plus）只能引用本文件的变量，
+   禁止在页面/组件里写裸 hex、裸圆角、裸字号、裸间距。
+
+   修改流程：提需求 → 在 docs/design-tokens.md 里加变更记录 →
+   评审通过 → 改本文件 → 跑 docs/prototypes 全部页面回归。
+   ============================================================ */
+
+:root {
+  /* ============================================================
+     一、颜色
+     ============================================================ */
+
+  /* 品牌主色：白字对比 4.93:1，可用于按钮与正文链接 */
+  --color-brand: #2f6be0;
+  --color-brand-hover: #2557c9;
+  --color-brand-weak: #dee9ff;   /* 选中态、品牌浅底 */
+  --color-brand-veil: #eef4ff;   /* 提示块浅底 */
+
+  /* 辅助色：正向、完成、可用 */
+  --color-mint: #2fb894;
+  --color-mint-deep: #127a65;    /* 文字用（4.7:1） */
+  --color-mint-weak: #dcf4ec;
+
+  /* 语义色 */
+  --color-danger: #cf3f4c;       /* 4.7:1 */
+  --color-danger-weak: #fbdfe3;
+  --color-warning: #9c6112;      /* 5.1:1 */
+  --color-warning-weak: #fbeed6;
+
+  /* 表面阶梯 S0~S3（蓝调灰，L* 94.6 / 96.8 / 98.5 / 100，级差 1.5%~2.2%） */
+  --surface-0: #e9eff9;          /* 工具面：表头、输入填充、画布边 */
+  --surface-1: #f1f6fd;          /* 侧栏、卡片、hover */
+  --surface-2: #f8fbfe;          /* 斑马行、引用块 */
+  --surface-3: #ffffff;          /* 主内容面、浮层 */
+
+  /* 文字（对比度基于白底） */
+  --text-1: #17212f;             /* 16.4:1 标题、正文 */
+  --text-2: #455468;             /* 7.7:1 次级正文 */
+  --text-3: #5c6c83;             /* 5.4:1 说明、表头 */
+  --text-4: #8291a6;             /* 3.2:1 仅装饰/占位，不承载信息 */
+  --text-inverse: #ffffff;
+
+  /* 线（分割线，不是边框） */
+  --line-default: #dbe5f2;
+  --line-strong: #cbd8ea;
+
+  /* 数据可视化 */
+  --chart-1: #2f6be0;
+  --chart-1-soft: #c3d6fb;   /* 柱状非重点柱、折线面积起点 */
+  --chart-2: #2fb894;
+  --chart-3: #e5a34a;
+  --chart-4: #e2666f;
+  --chart-5: #4cc3a7;
+  --chart-grid: #e2eaf7;
+
+  /* 热力图 5 档（0 最浅 → 4 最深，4 与品牌主色一致） */
+  --chart-heat-0: #e4ebf6;
+  --chart-heat-1: #cfdffc;
+  --chart-heat-2: #a8c3f9;
+  --chart-heat-3: #7ba1f6;
+  --chart-heat-4: #2f6be0;
+
+  /* 焦点环与氛围渐变 */
+  --color-focus-ring: #b9cdf5;
+  --surface-glow-brand: #dfe9ff;
+  --surface-glow-mint: #d8f3ea;
+
+  /* 品牌图形资产色（logo 固定，不参与界面配色） */
+  --asset-logo: #4a7dff;
+  --asset-logo-weak: #e8f0ff;
+
+  /* ============================================================
+     二、字体
+     ============================================================ */
+  --font-sans: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Courier New", monospace;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+
+  /* 字号阶梯：只准用这 9 档，下限 11（仅数字角标） */
+  --font-size-11: 11px;
+  --font-size-12: 12px;
+  --font-size-13: 13px;   /* 正文默认 */
+  --font-size-14: 14px;   /* 区块标题 */
+  --font-size-15: 15px;   /* 导语 */
+  --font-size-16: 16px;
+  --font-size-20: 20px;   /* 页面标题 */
+  --font-size-28: 28px;   /* 指标数字 */
+  --font-size-36: 36px;   /* 展示数字（少用） */
+
+  --line-height-tight: 1.3;
+  --line-height-base: 1.65;
+  --line-height-loose: 1.8;
+
+  /* ============================================================
+     三、间距（4 的倍数，只准用这 10 档）
+     ============================================================ */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 56px;
+  --space-10: 64px;
+
+  /* ============================================================
+     四、尺寸
+     ============================================================ */
+  --size-control: 32px;          /* 按钮、输入、下拉默认高度 */
+  --size-control-sm: 24px;       /* 小按钮、标签按钮 */
+  --size-tag: 20px;              /* 标签、状态点容器 */
+  --size-row: 40px;              /* 表格行 */
+  --size-icon: 16px;
+  --size-avatar: 26px;
+  --size-avatar-lg: 52px;
+  --size-nav: 224px;             /* 侧栏宽度 */
+  --size-page-padding: 32px;     /* 页面左右内边距 */
+  --size-content-max: 1320px;    /* 内容最大宽度 */
+  --size-form-max: 620px;        /* 表单列最大宽度 */
+  --size-read-max: 40em;         /* 正文行长 */
+  --size-dialog-sm: 420px;
+  --size-dialog: 520px;
+  --size-dialog-lg: 640px;
+  --size-drawer: 480px;
+
+  /* ============================================================
+     五、圆角（上限 8，无例外）
+     ============================================================ */
+  --radius-0: 2px;      /* 微型元素：进度条、热力格、图例色块、角标、2px 装饰条 */
+  --radius-1: 4px;      /* 标签、输入内块、小按钮、提示框 */
+  --radius-2: 6px;      /* 按钮、输入、导航项、chip */
+  --radius-3: 8px;      /* 卡片、弹窗、抽屉、头像 */
+  --radius-circle: 50%; /* 仅状态圆点、圆形指示器 */
+
+  /* ============================================================
+     六、阴影（只给浮层，不允许用来表达层级）
+     ============================================================ */
+  --shadow-dialog: 0 18px 48px rgba(23, 33, 47, .16);
+  --shadow-drawer: -12px 0 40px rgba(23, 33, 47, .14);
+  --shadow-popover: 0 12px 32px rgba(23, 33, 47, .14);
+  --shadow-tools: 0 6px 18px rgba(23, 33, 47, .10);
+
+  /* ============================================================
+     七、层级与动效
+     ============================================================ */
+  --z-menu: 30;
+  --z-overlay: 40;
+  --z-tools: 60;
+  --z-tooltip: 90;
+
+  --duration-fast: 120ms;    /* hover、focus */
+  --duration-base: 200ms;    /* 展开、切换 */
+  --duration-enter: 320ms;   /* 浮层入场 */
+  --duration-chart: 520ms;   /* 图表扫动/生长 */
+  --ease-standard: cubic-bezier(.2, .8, .2, 1);
+  --ease-out: cubic-bezier(.25, .8, .3, 1);
+}
+
+/* ============================================================
+   八、Element Plus 映射
+   只允许在这里覆写 EP 变量；组件内不得再写 --el-* 或裸值。
+   ============================================================ */
+:root {
+  --el-color-primary: var(--color-brand);
+  --el-color-primary-light-3: #6d95ea;
+  --el-color-primary-light-5: #97b5f0;
+  --el-color-primary-light-7: #c1d3f7;
+  --el-color-primary-light-8: #dee9ff;
+  --el-color-primary-light-9: #eef4ff;
+  --el-color-primary-dark-2: var(--color-brand-hover);
+
+  --el-color-success: var(--color-mint-deep);
+  --el-color-success-light-9: var(--color-mint-weak);
+  --el-color-warning: var(--color-warning);
+  --el-color-warning-light-9: var(--color-warning-weak);
+  --el-color-danger: var(--color-danger);
+  --el-color-danger-light-9: var(--color-danger-weak);
+  --el-color-error: var(--color-danger);
+
+  --el-text-color-primary: var(--text-1);
+  --el-text-color-regular: var(--text-2);
+  --el-text-color-secondary: var(--text-3);
+  --el-text-color-placeholder: var(--text-4);
+
+  --el-border-color: var(--line-default);
+  --el-border-color-light: var(--line-default);
+  --el-border-color-lighter: var(--line-default);
+  --el-border-color-extra-light: var(--line-default);
+
+  --el-bg-color: var(--surface-3);
+  --el-bg-color-page: var(--surface-1);
+  --el-bg-color-overlay: var(--surface-3);
+  --el-fill-color-blank: var(--surface-3);
+  --el-fill-color-light: var(--surface-1);
+  --el-fill-color-lighter: var(--surface-2);
+  --el-fill-color: var(--surface-0);
+
+  --el-border-radius-base: var(--radius-2);
+  --el-border-radius-small: var(--radius-1);
+  --el-border-radius-round: var(--radius-3);
+
+  --el-font-family: var(--font-sans);
+  --el-font-size-base: var(--font-size-13);
+  --el-font-size-small: var(--font-size-12);
+  --el-font-size-extra-small: var(--font-size-11);
+
+  --el-component-size: var(--size-control);
+  --el-component-size-small: var(--size-control-sm);
+  --el-component-size-large: var(--size-control);
+
+  --el-box-shadow-light: var(--shadow-popover);
+  --el-box-shadow: var(--shadow-dialog);
+  --el-transition-duration: var(--duration-base);
+}

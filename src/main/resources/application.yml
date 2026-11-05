@@ -1,0 +1,195 @@
+spring:
+  application:
+    name: intern-radar
+  profiles:
+    active: local
+  # 业务数据存储：MySQL。真实账号密码写在 application-local.yml，本文件只放可连通的默认值。
+  datasource:
+    url: jdbc:mysql://localhost:3306/intern_radar?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: REPLACE_WITH_YOUR_PASSWORD
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  # 启动时执行建表脚本，脚本内全部是 CREATE TABLE IF NOT EXISTS，重复执行安全
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
+  # 文档上传的大小限制，代码里还会再校验一次内容长度
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 4MB
+  ai:
+    model:
+      # 本项目不使用向量库/知识库，关掉 embedding。
+      # 该开关是 Spring AI 的全局模型选择器（取值 openai/none/...），
+      # 设为 none 后不会再创建 OpenAiEmbeddingModel，
+      # 避免 DeepSeek 这类不提供 embedding 接口的平台被创建无用 Bean。
+      embedding: none
+    # 说明：Chat 模型通过 OpenAI 兼容协议接入，因此换平台只需要改下面三处
+    #      spring.ai.openai.base-url / api-key / chat.options.model
+    #      常见平台的 base-url 与模型名：
+    #        DeepSeek 官方 ：https://api.deepseek.com              deepseek-chat
+    #        月之暗面 Kimi ：https://api.moonshot.cn/v1             kimi-k2-0905-preview
+    #        智谱 GLM      ：https://open.bigmodel.cn/api/paas/v4  glm-4-plus
+    #        本地 Ollama   ：http://localhost:11434/v1             qwen3:8b
+    #      真实 api-key 请写在 application-local.yml（已被 .gitignore 忽略），不要提交到 Git
+    openai:
+      base-url: https://api.deepseek.com
+      # 占位符，仅为保证应用能启动；真实 Key 写在 application-local.yml 里覆盖。
+      # 故意用 ASCII，忘填时会得到平台返回的清晰 401，而不是 HTTP 头非法字符错误。
+      api-key: sk-REPLACE_WITH_YOUR_KEY
+      chat:
+        options:
+          model: deepseek-chat
+server:
+  port: 8123
+  servlet:
+    context-path: /api
+# springdoc-openapi config
+springdoc:
+  # 关闭统一异常响应生成，避免 springdoc 2.3.0 扫描 @ControllerAdvice 时
+  # 调用 Spring Framework 6.2 已移除的 ControllerAdviceBean(Object) 构造方法
+  override-with-generic-response: false
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      # 同时覆盖原有控制器与实习雷达控制器，否则新接口不会出现在 Knife4j 文档里
+      packages-to-scan: com.ciniam
+# knife4j config
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+# MyBatis：数据库字段下划线转 Java 驼峰
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+# 定时任务使用固定大小线程池，避免多个任务互相阻塞
+spring.task.scheduling.pool.size: 2
+
+# 实习雷达业务配置
+# 人名、仓库路径、密钥属于本地信息，真实值写在 application-local.yml，本文件只放示例
+intern-radar:
+  # 被服务的人：userId 是系统内标识，git-authors 用于筛出本人的提交
+  interns: []
+  # 导师：周报接收人
+  mentors: []
+  git:
+    executable: git
+    timeout-seconds: 30
+    max-commits: 200
+    repositories: []
+  feishu:
+    # 群自定义机器人 Webhook，用于发到群
+    webhook-url: https://open.feishu.cn/open-apis/bot/v2/hook/REPLACE_WITH_YOUR_WEBHOOK
+    timeout-seconds: 10
+    # 企业自建应用，用于按 open_id 私发与读取聊天记录
+    app-id: cli_REPLACE_WITH_YOUR_APP_ID
+    app-secret: REPLACE_WITH_YOUR_APP_SECRET
+    # 两个回调地址必须分开：login 用于登录，回调页会把令牌回传给登录窗口并自动关窗
+    # oauth 用于聊天采集授权，回调后只展示授权结果
+    # 两个地址都要在开放平台的「重定向 URL」白名单里
+    oauth-redirect-uri: http://localhost:8123/api/feishu/oauth/callback
+    login-redirect-uri: http://localhost:8123/api/auth/feishu/callback
+    # 授权时申请的权限，每一项都必须先在开放平台申请并发布版本，否则授权页报 20027
+    # im:message:readonly 读消息，im:chat:readonly 查会话列表，offline_access 换 refresh_token
+    oauth-scope: im:message:readonly im:chat:readonly im:message.p2p_msg:get_as_user offline_access
+    # 聊天记录白名单会话，为空则不采集聊天记录
+    # identity 取 APP 时用应用身份，适合机器人所在的群与机器人与用户的单聊，无需任何人授权
+    # identity 取 USER 时用用户身份，需要该用户先完成一次 OAuth 授权
+    chats: []
+  zentao:
+    base-url: https://zentao.example.com
+    account: REPLACE_WITH_YOUR_ACCOUNT
+    password: REPLACE_WITH_YOUR_PASSWORD
+    # 安全闸门：默认禁止提交登录，需显式开启，避免反复失败被锁号
+    allow-login: false
+    skip-tls-verify: true
+    timeout-seconds: 15
+    session-ttl-minutes: 20
+    max-consecutive-failures: 3
+    max-pages: 5
+  risk:
+    no-output-days: 2
+    task-stall-days: 3
+    deadline-days: 2
+    deadline-progress: 50
+    alert-throttle-hours: 6
+  scheduler:
+    enabled: false
+    morning-enabled: true
+    # 早推送按窗口扫描，每个人在自己配置的时间点推送，job_run 保证当天只推一次
+    # 扫描区间限制在 6 点到 23 点，避免深夜空跑
+    morning-scan-cron: "0 */5 6-23 * * ?"
+    evening-enabled: true
+    # 晚推送同样按窗口扫描
+    evening-scan-cron: "0 */5 6-23 * * ?"
+    weekly-enabled: true
+    # 周报也按窗口扫描，具体接收时间与范围取每位导师在配置页里的设置
+    weekly-scan-cron: "0 */5 6-23 * * ?"
+    risk-enabled: true
+    # 每天 19:00 跑一次风险检查
+    risk-check-cron: "0 0 19 * * ?"
+  security:
+    # 飞书用户令牌的加密密钥，必须自行替换，不要提交真实值
+    token-key: REPLACE_WITH_YOUR_32_CHAR_TOKEN_KEY
+  trend:
+    # Python 趋势统计服务，留空则跳过远程统计
+    base-url: ""
+  knowledge:
+    # 知识目录，docs 放知识文档，pitfalls 放坑位记录，均为 Markdown 文件
+    # 文件是唯一事实来源，启动时扫描同步元数据，改完文件也可调 /learn/docs/refresh
+    root-dir: knowledge
+    sync-on-startup: true
+    # 单篇文档读取上限，防止正文过长把上下文撑爆
+    max-read-chars: 6000
+    # 检索默认返回条数
+    search-top-k: 8
+  # 模型接入。这里只是兜底，界面上的服务端配置改过后以库中的值为准，改完即时生效
+  # spring.ai.openai.api-key 只作密钥兜底，模型与地址以库里保存的为准
+  # 联网搜索（Firecrawl）。密钥留空表示不启用，学习问答里不会注册该工具
+  search:
+    api-key:
+    base-url: https://api.firecrawl.dev/v2
+    timeout-seconds: 20
+    # 单次检索返回条数
+    limit: 5
+  model:
+    base-url: https://api.deepseek.com
+    # 留空则沿用 spring.ai.openai.api-key，密钥仍只写在本地配置文件里
+    api-key:
+    name: deepseek-chat
+    temperature: 0.7
+    timeout-seconds: 60
+  auth:
+    # 本地调试用的身份直选登录。接入真实用户时务必改为 false
+    dev-login-enabled: true
+    session-hours: 72
+    # 飞书授权待处理会话的有效分钟数
+    pending-minutes: 10
+    # 密码策略：至少 8 位，且同时含大写、小写与数字
+    password-min-length: 8
+    max-failed-attempts: 5
+    lock-minutes: 15
+    # 邮箱验证码有效期与重发间隔
+    code-expire-minutes: 10
+    code-resend-seconds: 60
+
+  # 发信邮箱。留空则不能自助找回密码，只能由管理员重置
+  mail:
+    host:
+    port: 465
+    username:
+    password:
+    from:
+    ssl: true
+    starttls: false
+    timeout-seconds: 15
